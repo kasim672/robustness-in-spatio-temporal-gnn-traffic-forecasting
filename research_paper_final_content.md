@@ -193,13 +193,13 @@
 
 ### Key Ablation Findings
 
-1. **Graph structure provides only marginal benefit** (~1-2% improvement over identity)
-2. **Random graph performs comparably** — and even slightly better in some cases
-3. **Most of the GNN advantage comes from temporal learning**, not spatial topology
+1. **Graph structure provides only marginal benefit** (~1-2% improvement over identity graph)
+2. **In our experiments, random-graph performance was comparable to the learned graph**, and marginally better in some configurations
+3. **The temporal components** (gated CNN for STGCN, GRU for DCRNN) **appear to be the primary drivers of performance** in these benchmark conditions
 4. **The learned graph helps most at short horizons** (15 min) where spatial correlation is strongest
-5. **At 60 min, random graph is better** — suggesting learned spatial patterns degrade over longer horizons
+5. **At 60 min, the random graph is comparable** — spatial patterns learned from correlations may be less reliable at longer horizons
 
-> **Discussion point:** This challenges the conventional narrative that learned graph topology is essential for spatio-temporal GNNs. The temporal components (gated CNN for STGCN, GRU for DCRNN) appear to be the primary drivers of performance.
+> **Discussion point (single-run observation — interpret with caution):** In our experiments, random-graph performance was comparable to the learned correlation-based graph. Two explanations are plausible: (1) temporal components dominate regardless of graph quality, or (2) the learned graph at ε=0.3 is too sparse (≈2.2 connections/node) to provide strong spatial signal, making it barely distinguishable from a random graph. These hypotheses cannot be disentangled from a single run. Establishing a definitive claim about graph-topology importance requires multiple training seeds, confidence intervals, and statistical significance testing (e.g., paired t-test). We present this as a preliminary observation motivating future systematic investigation.
 
 ---
 

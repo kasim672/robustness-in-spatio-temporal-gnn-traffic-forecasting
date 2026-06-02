@@ -115,7 +115,7 @@ DCRNN:  3.548 (learned) → 3.532 (random)  = -0.47% BETTER!
 2. The correlation-based graph at ε=0.3 is so sparse (2.2 conn/node) that it barely differs from random
 3. For traffic, temporal patterns dominate — any graph that provides some mixing is sufficient
 
-**Discussion point for paper:** This challenges the conventional narrative that carefully learned graph topology is essential for spatio-temporal GNNs.
+**Discussion point for paper (single-run — interpret with caution):** In our experiments, random-graph performance was comparable to the learned correlation-based graph. This is a preliminary observation, not a conclusion. Two competing explanations exist: (1) temporal components dominate regardless of graph quality; (2) the learned graph at ε=0.3 is too sparse to provide meaningful spatial signal. Multiple seeds, confidence intervals, and significance testing are required before either explanation can be stated as a finding.
 
 ---
 
