@@ -276,7 +276,7 @@ If you use this benchmark in your research:
 ```bibtex
 @misc{graphnn2026,
   title={Robustness in Spatio-Temporal GNN Traffic Forecasting},
-  author={Kasim},
+  author={Kasim Ishaque Ghanchi, Ali Mehdi Mirza, Shreya Desai},
   year={2026},
   url={https://github.com/kasim672/robustness-in-spatio-temporal-gnn-traffic-forecasting}
 }
