@@ -121,21 +121,32 @@ def load_deep_model(model_name, dataset_name, num_sensors, graph_data=None):
 
 def eval_with_seeds(eval_fn, seeds, ratio_label):
     """
-    Call eval_fn(seed) for each seed. Returns {"mean": float, "std": float, "n": int}.
-    eval_fn must return a scalar MAE.
+    Call eval_fn(seed) for each seed.
+    eval_fn must return a dict {'MAE': float, 'RMSE': float, 'MAPE': float}.
+    Returns nested dict with mean/std/all for each metric, plus legacy 'mean'/'std' for MAE.
     """
-    maes = []
+    all_metrics = {'MAE': [], 'RMSE': [], 'MAPE': []}
     for seed in seeds:
         np.random.seed(seed)
-        mae = eval_fn(seed)
-        maes.append(mae)
-    n = len(maes)
-    return {
-        "mean": round(float(np.mean(maes)), 4),
-        "std":  round(float(np.std(maes, ddof=1)) if n > 1 else 0.0, 4),
-        "n":    n,
-        "all":  [round(m, 4) for m in maes],
-    }
+        metrics = eval_fn(seed)
+        for k in all_metrics:
+            all_metrics[k].append(metrics[k])
+    n = len(all_metrics['MAE'])
+
+    result = {}
+    for k, vals in all_metrics.items():
+        arr = np.array(vals)
+        result[k.lower()] = {
+            "mean": round(float(np.mean(arr)), 4),
+            "std":  round(float(np.std(arr, ddof=1)) if n > 1 else 0.0, 4),
+            "all":  [round(float(v), 4) for v in vals],
+        }
+    # Legacy keys for backward compatibility with existing plotting/analysis code
+    result["mean"] = result["mae"]["mean"]
+    result["std"]  = result["mae"]["std"]
+    result["n"]    = n
+    result["all"]  = result["mae"]["all"]
+    return result
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -232,40 +243,46 @@ def evaluate_robustness(dataset_name="METR-LA", n_seeds=5):
                 pm    = PersistenceModel(pred_len=config.PRED_LEN)
                 p_dn  = pm.predict(cx_dn)
                 p_norm = (p_dn - mean) / std
-                return evaluate_predictions(p_norm, test_Y, mean, std)['overall']['MAE']
+                m = evaluate_predictions(p_norm, test_Y, mean, std)['overall']
+                return {'MAE': m['MAE'], 'RMSE': m['RMSE'], 'MAPE': m['MAPE']}
 
             res = eval_with_seeds(eval_persistence, seeds if ratio > 0 else [0], ratio)
             results[scenario_name][ratio]['Persistence'] = res
-            print(f"    {'Persistence':<20} MAE: {res['mean']:.4f} ± {res['std']:.4f}")
+            print(f"    {'Persistence':<20} MAE: {res['mae']['mean']:.4f}±{res['mae']['std']:.4f}  RMSE: {res['rmse']['mean']:.4f}±{res['rmse']['std']:.4f}  MAPE: {res['mape']['mean']:.2f}%±{res['mape']['std']:.2f}")
 
             # ── 2. Historical Average (input-independent, 1 seed sufficient) ──
             p_ha_dn = ha_model.predict(test_timestamps, num_sensors, config.PRED_LEN)
             p_ha    = (p_ha_dn - mean) / std
-            mae_ha  = evaluate_predictions(p_ha, test_Y, mean, std)['overall']['MAE']
+            ha_m  = evaluate_predictions(p_ha, test_Y, mean, std)['overall']
             results[scenario_name][ratio]['HistoricalAverage'] = {
-                "mean": round(mae_ha, 4), "std": 0.0, "n": 1, "all": [round(mae_ha, 4)]
+                "mean": round(ha_m['MAE'], 4), "std": 0.0, "n": 1, "all": [round(ha_m['MAE'], 4)],
+                "mae":  {"mean": round(ha_m['MAE'], 4),  "std": 0.0, "all": [round(ha_m['MAE'], 4)]},
+                "rmse": {"mean": round(ha_m['RMSE'], 4), "std": 0.0, "all": [round(ha_m['RMSE'], 4)]},
+                "mape": {"mean": round(ha_m['MAPE'], 4), "std": 0.0, "all": [round(ha_m['MAPE'], 4)]},
             }
-            print(f"    {'HistoricalAverage':<20} MAE: {mae_ha:.4f} ± 0.0000  (input-independent)")
+            print(f"    {'HistoricalAverage':<20} MAE: {ha_m['MAE']:.4f}±0.0000  RMSE: {ha_m['RMSE']:.4f}±0.0000  MAPE: {ha_m['MAPE']:.2f}%±0.00  (input-independent)")
 
             # ── 3. ARIMA ──────────────────────────────────────────────────────
             if arima_model is not None:
                 def eval_arima(seed):
                     cx = make_cx(seed)
                     p  = arima_model.predict(cx)
-                    return evaluate_predictions(p, test_Y, mean, std)['overall']['MAE']
+                    m = evaluate_predictions(p, test_Y, mean, std)['overall']
+                    return {'MAE': m['MAE'], 'RMSE': m['RMSE'], 'MAPE': m['MAPE']}
                 res = eval_with_seeds(eval_arima, seeds if ratio > 0 else [0], ratio)
                 results[scenario_name][ratio]['ARIMA'] = res
-                print(f"    {'ARIMA':<20} MAE: {res['mean']:.4f} ± {res['std']:.4f}")
+                print(f"    {'ARIMA':<20} MAE: {res['mae']['mean']:.4f}±{res['mae']['std']:.4f}  RMSE: {res['rmse']['mean']:.4f}±{res['rmse']['std']:.4f}  MAPE: {res['mape']['mean']:.2f}%±{res['mape']['std']:.2f}")
 
             # ── 4. Random Forest ──────────────────────────────────────────────
             if rf_model is not None:
                 def eval_rf(seed):
                     cx = make_cx(seed)
                     p  = rf_model.predict(cx)
-                    return evaluate_predictions(p, test_Y, mean, std)['overall']['MAE']
+                    m = evaluate_predictions(p, test_Y, mean, std)['overall']
+                    return {'MAE': m['MAE'], 'RMSE': m['RMSE'], 'MAPE': m['MAPE']}
                 res = eval_with_seeds(eval_rf, seeds if ratio > 0 else [0], ratio)
                 results[scenario_name][ratio]['RandomForest'] = res
-                print(f"    {'RandomForest':<20} MAE: {res['mean']:.4f} ± {res['std']:.4f}")
+                print(f"    {'RandomForest':<20} MAE: {res['mae']['mean']:.4f}±{res['mae']['std']:.4f}  RMSE: {res['rmse']['mean']:.4f}±{res['rmse']['std']:.4f}  MAPE: {res['mape']['mean']:.2f}%±{res['mape']['std']:.2f}")
 
             # ── 5–7. Deep models ──────────────────────────────────────────────
             for m_name, model in deep_models.items():
@@ -276,11 +293,12 @@ def evaluate_robustness(dataset_name="METR-LA", n_seeds=5):
                         batch_size=config.BATCH_SIZE, shuffle=False,
                     )
                     preds, gt, _ = predict_model(_model, loader, config, _m, graph_data)
-                    return evaluate_predictions(preds, gt, mean, std)['overall']['MAE']
+                    m = evaluate_predictions(preds, gt, mean, std)['overall']
+                    return {'MAE': m['MAE'], 'RMSE': m['RMSE'], 'MAPE': m['MAPE']}
 
                 res = eval_with_seeds(eval_deep, seeds if ratio > 0 else [0], ratio)
                 results[scenario_name][ratio][m_name.upper()] = res
-                print(f"    {m_name.upper():<20} MAE: {res['mean']:.4f} ± {res['std']:.4f}")
+                print(f"    {m_name.upper():<20} MAE: {res['mae']['mean']:.4f}±{res['mae']['std']:.4f}  RMSE: {res['rmse']['mean']:.4f}±{res['rmse']['std']:.4f}  MAPE: {res['mape']['mean']:.2f}%±{res['mape']['std']:.2f}")
 
     # ── Save ──────────────────────────────────────────────────────────────────
     # Convert ratio keys to strings for JSON serialisation
