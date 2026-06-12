@@ -32,10 +32,10 @@ LSTM outperforms all classical baselines on both datasets (MAE 3.707 on METR-LA,
 | PEMS-BAY | Historical Avg. | Base | 3.559 | 3.559 | 3.559 | 3.559 | 6.827 | 8.76 |
 
 <!-- INSERT FIGURE: results/plots/METR-LA_baselines_comparison.png -->
-**Fig. 4.** Overall clean-data MAE on METR-LA. DCRNN achieves the lowest MAE, but clean accuracy alone does not determine robustness under deployment conditions.
+**Fig. 4.** Multi-metric performance comparison on METR-LA (MAE, RMSE, MAPE). DCRNN achieves the lowest MAE, but STGCN achieves the lowest RMSE, indicating fewer extreme prediction errors.
 
 <!-- INSERT FIGURE: results/plots/PEMS-BAY_baselines_comparison.png -->
-**Fig. 5.** Overall clean-data MAE on PEMS-BAY. STGCN ranks below LSTM and Random Forest, suggesting graph density interacts with spectral convolution.
+**Fig. 5.** Multi-metric performance comparison on PEMS-BAY (MAE, RMSE, MAPE). DCRNN leads across all three metrics. STGCN ranks below LSTM and Random Forest on MAE, suggesting graph density may interact with spectral convolution.
 
 <!-- INSERT FIGURE: results/plots/METR-LA_baselines_horizon.png -->
 **Fig. 6.** Per-horizon MAE on METR-LA. STGCN surpasses DCRNN at the 60-minute horizon due to the absence of autoregressive error compounding.
@@ -186,17 +186,94 @@ Overall, the experiments demonstrate that evaluating traffic forecasting models 
 
 ---
 
+# IX. LIMITATIONS AND FUTURE WORK
+
+Although the proposed benchmark provides a comprehensive evaluation of robustness under realistic sensor degradation, several limitations should be acknowledged. First, the experiments are conducted on two widely used public datasets, METR-LA and PEMS-BAY, and therefore the conclusions may not directly generalize to other traffic networks with different spatial characteristics or sensing infrastructures. Second, the robustness evaluation considers two corruption mechanisms—random missing values and complete sensor failures—but real-world deployments may also experience burst errors, communication delays, calibration drift, biased measurements, or dynamically changing road topologies. Third, the graph ablation study is based on single training runs for each graph configuration; consequently, while the observed differences are informative, statistical significance cannot be established without additional multi-seed experiments. Fourth, all models were trained exclusively on clean data, meaning the observed degradation reflects worst-case robustness without any corruption-aware adaptation.
+
+Future research can extend this benchmark in several directions. Modern architectures such as Graph WaveNet, AGCRN, ASTGCN variants, and transformer-based spatio-temporal models should be evaluated under the same corruption protocol to determine whether recent advances improve robustness as well as clean-data accuracy. In addition, adaptive graph learning, uncertainty-aware forecasting, corruption-aware data augmentation, masked reconstruction objectives, and joint imputation-forecasting frameworks represent promising approaches for increasing resilience to degraded sensor inputs. Finally, evaluating robustness under more realistic operational scenarios, including evolving graph topology caused by road closures or network disruptions, would further improve the practical relevance of robustness-oriented traffic forecasting benchmarks.
+
+---
+
+# X. CONCLUSION
+
+This paper presented a robustness-oriented benchmark of seven traffic forecasting models on the METR-LA and PEMS-BAY datasets, comparing traditional statistical methods, deep learning models, and spatio-temporal graph neural networks under both clean and degraded sensing conditions. While DCRNN achieved the highest forecasting accuracy on clean data, the experiments demonstrated that clean-data accuracy alone does not guarantee robustness under realistic sensor degradation. STGCN consistently exhibited greater resilience to randomly missing inputs, whereas sensor failure altered the robustness ranking and, on METR-LA, allowed the non-graph LSTM model to outperform both graph-based models. These findings suggest that graph-based message passing, while beneficial for exploiting spatial dependencies, may also propagate corrupted information when sensor failures occur.
+
+The graph ablation study further indicated that, under the evaluated configuration, learned graph topology contributed only marginal improvements over simpler alternatives, suggesting that temporal learning played a dominant role in the observed predictive performance. Although these observations require additional multi-seed validation to establish statistical significance, they highlight the importance of carefully evaluating the contribution of graph construction in spatio-temporal forecasting systems.
+
+Overall, the results demonstrate that robustness should be considered alongside predictive accuracy when selecting forecasting models for Intelligent Transportation Systems. Evaluating models solely on clean benchmark datasets may overestimate their suitability for real-world deployment, where missing data, sensor failures, and communication disruptions are unavoidable. Future traffic forecasting research should therefore emphasize robustness-aware evaluation and corruption-resilient model design in addition to achieving state-of-the-art accuracy.
+
+---
+
+# ACKNOWLEDGMENT
+
+The author gratefully acknowledges the authors of the METR-LA and PEMS-BAY benchmark datasets and the broader open-source research community for providing publicly available datasets, reference implementations, and reproducible resources that supported this study.
+
+---
+
 ## Figure Placement Summary
+
 
 | Fig. | File | Section | Purpose |
 |---|---|---|---|
 | 1 | *(earlier section)* | IV | Experimental pipeline |
 | 2 | *(earlier section)* | V | STGCN architecture |
 | 3 | *(earlier section)* | V | DCRNN architecture |
-| 4 | `results/plots/METR-LA_baselines_comparison.png` | VII-A | Clean accuracy ranking |
-| 5 | `results/plots/PEMS-BAY_baselines_comparison.png` | VII-A | Cross-dataset contrast |
+| 4 | `results/plots/METR-LA_baselines_comparison.png` | VII-A | Multi-metric clean accuracy (MAE, RMSE, MAPE) |
+| 5 | `results/plots/PEMS-BAY_baselines_comparison.png` | VII-A | Cross-dataset multi-metric contrast |
 | 6 | `results/plots/METR-LA_baselines_horizon.png` | VII-A | Horizon crossover (STGCN vs DCRNN) |
 | 7 | `results/plots/PEMS-BAY_baselines_horizon.png` | VII-A | PEMS-BAY horizon comparison |
 | 8 | `results/plots/METR-LA_robustness_curves.png` | VII-B/C | **Central contribution** |
 | 9 | `results/plots/adjacency_matrix_detailed.png` | VII-D | Graph sparsity visualization |
 | 10 | `results/plots/METR-LA_sparsity_analysis.png` | VII-D | Ablation support |
+
+---
+
+# REFERENCES
+
+[1] Y. Li, R. Yu, C. Shahabi, and Y. Liu, "Diffusion convolutional recurrent neural network: Data-driven traffic forecasting," in *Proc. Int. Conf. Learn. Represent. (ICLR)*, Vancouver, BC, Canada, 2018.
+
+[2] B. Yu, H. Yin, and Z. Zhu, "Spatio-temporal graph convolutional networks: A deep learning framework for traffic forecasting," in *Proc. 27th Int. Joint Conf. Artif. Intell. (IJCAI)*, Stockholm, Sweden, 2018, pp. 3634–3640.
+
+[3] M. Defferrard, X. Bresson, and P. Vandergheynst, "Convolutional neural networks on graphs with fast localized spectral filtering," in *Proc. Advances Neural Inf. Process. Syst. (NeurIPS)*, vol. 29, 2016, pp. 3844–3852.
+
+[4] Z. Wu, S. Pan, G. Long, J. Jiang, and C. Zhang, "Graph WaveNet for deep spatial-temporal graph modeling," in *Proc. 28th Int. Joint Conf. Artif. Intell. (IJCAI)*, Macao, China, 2019, pp. 1907–1913.
+
+[5] L. Bai, L. Yao, C. Li, X. Wang, and C. Wang, "Adaptive graph convolutional recurrent network for traffic forecasting," in *Proc. Advances Neural Inf. Process. Syst. (NeurIPS)*, vol. 33, 2020, pp. 17804–17815.
+
+[6] S. Guo, Y. Lin, N. Feng, C. Song, and H. Wan, "Attention based spatial-temporal graph convolutional networks for traffic flow forecasting," in *Proc. AAAI Conf. Artif. Intell.*, vol. 33, no. 1, 2019, pp. 922–929.
+
+[7] W. Jiang and J. Luo, "Graph neural network for traffic forecasting: A survey," *Expert Syst. Appl.*, vol. 207, p. 117921, 2022.
+
+[8] S. Hochreiter and J. Schmidhuber, "Long short-term memory," *Neural Comput.*, vol. 9, no. 8, pp. 1735–1780, 1997.
+
+[9] Z. Cui, K. Henrickson, R. Ke, and Y. Wang, "Graph Markov network for traffic forecasting with missing data," *Transp. Res. Part C, Emerg. Technol.*, vol. 117, p. 102671, 2020.
+
+[10] J. Zuo, K. Zeitouni, Y. Taher, and S. Garcia-Rodriguez, "Graph convolutional networks for traffic forecasting with missing values," *Data Mining Knowl. Discovery*, vol. 37, pp. 913–947, 2023.
+
+[11] T. N. Kipf and M. Welling, "Semi-supervised classification with graph convolutional networks," in *Proc. Int. Conf. Learn. Represent. (ICLR)*, Toulon, France, 2017.
+
+[12] L. Breiman, "Random forests," *Mach. Learn.*, vol. 45, no. 1, pp. 5–32, 2001.
+
+[13] G. E. P. Box, G. M. Jenkins, G. C. Reinsel, and G. M. Ljung, *Time Series Analysis: Forecasting and Control*, 5th ed. Hoboken, NJ, USA: Wiley, 2015.
+
+[14] K. Cho, B. van Merriënboer, C. Gulcehre, D. Bahdanau, F. Bougares, H. Schwenk, and Y. Bengio, "Learning phrase representations using RNN encoder-decoder for statistical machine translation," in *Proc. Conf. Empirical Methods Natural Lang. Process. (EMNLP)*, Doha, Qatar, 2014, pp. 1724–1734.
+
+[15] Y. N. Dauphin, A. Fan, M. Auli, and D. Grangier, "Language modeling with gated convolutional networks," in *Proc. 34th Int. Conf. Mach. Learn. (ICML)*, Sydney, Australia, 2017, pp. 933–941.
+
+[16] D. P. Kingma and J. Ba, "Adam: A method for stochastic optimization," in *Proc. 3rd Int. Conf. Learn. Represent. (ICLR)*, San Diego, CA, USA, 2015.
+
+[17] E. I. Vlahogianni, M. G. Karlaftis, and J. C. Golias, "Short-term traffic forecasting: Where we are and where we're going," *Transp. Res. Part C, Emerg. Technol.*, vol. 43, pp. 3–19, 2014.
+
+[18] C. Chen, K. Petty, A. Skabardonis, P. Varaiya, and Z. Jia, "Freeway performance measurement system: Mining loop detector data," *Transp. Res. Rec.*, vol. 1748, no. 1, pp. 96–102, 2001.
+
+[19] B. M. Williams and L. A. Hoel, "Modeling and forecasting vehicular traffic flow as a seasonal ARIMA process: Theoretical basis and empirical results," *J. Transp. Eng.*, vol. 129, no. 6, pp. 664–672, 2003.
+
+[20] P. Veličković, G. Cucurull, A. Casanova, A. Romero, P. Liò, and Y. Bengio, "Graph attention networks," in *Proc. Int. Conf. Learn. Represent. (ICLR)*, Vancouver, BC, Canada, 2018.
+
+[21] C. Zheng, X. Fan, C. Wang, and J. Qi, "GMAN: A graph multi-attention network for traffic prediction," in *Proc. AAAI Conf. Artif. Intell.*, vol. 34, no. 1, 2020, pp. 1234–1241.
+
+[22] D. Zügner, A. Akbarnejad, and S. Günnemann, "Adversarial attacks on neural networks for graph data," in *Proc. 24th ACM SIGKDD Int. Conf. Knowl. Discovery Data Mining*, London, UK, 2018, pp. 2847–2856.
+
+[23] D. A. Tedjopurnomo, Z. Bao, B. Zheng, F. M. Choudhury, and A. K. Qin, "A survey on modern deep neural network for traffic prediction: Trends, methods and challenges," *IEEE Trans. Knowl. Data Eng.*, vol. 34, no. 4, pp. 1544–1561, 2022.
+
+[24] Y. Zhang, T. Cheng, and Y. Ren, "A graph deep learning method for short-term traffic forecasting on large road networks," *Comput.-Aided Civil Infrastruct. Eng.*, vol. 34, no. 10, pp. 877–896, 2019.
