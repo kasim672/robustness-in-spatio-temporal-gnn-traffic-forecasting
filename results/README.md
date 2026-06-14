@@ -15,7 +15,7 @@ results/
 │   └── gnn_models/       # STGCN and DCRNN weights (incl. ablation)
 │       ├── dcrnn/
 │       └── stgcn/
-└── paper_assets/         # LaTeX tables, CSVs, and checklists for the paper
+└── paper_assets/         # CSVs, and checklists for the paper
 ```
 
 ---
@@ -131,17 +131,11 @@ Trained model checkpoints. **These are `.gitignored`** — regenerate by running
 
 ## 📁 paper_assets/
 
-Pre-formatted outputs for direct inclusion in the IEEE LaTeX manuscript.
-
 | File | Format | Content |
 |---|---|---|
 | `main_results.csv` | CSV | Clean-data MAE/RMSE/MAPE for all models and datasets |
 | `robustness_random_missing.csv` | CSV | Degradation under random missing (p=0.1–0.4) |
 | `robustness_sensor_failure.csv` | CSV | Degradation under sensor failure (p=0.1–0.4) |
-| `table_main_results.tex` | LaTeX | Table III — clean-data performance |
-| `table_robustness.tex` | LaTeX | Tables IV & V — robustness results |
-| `table_architecture.tex` | LaTeX | Table II — model comparison |
-| `table_dataset_stats.tex` | LaTeX | Table I — dataset statistics |
 | `hyperparameters.md` | Markdown | Complete hyperparameter listing |
 | `reproducibility_checklist.md` | Markdown | Pipeline integrity checklist |
 
@@ -162,6 +156,6 @@ python -u run_sparsity_analysis.py
 # Plots
 python plot_robustness.py
 
-# Paper assets (LaTeX tables + CSVs)
+# Paper assets (CSVs)
 python generate_paper_assets.py
 ```
