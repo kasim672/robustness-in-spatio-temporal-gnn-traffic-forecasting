@@ -43,5 +43,7 @@ Thumbs.db
 
 # unnecessary
 /RESEARCH_GUIDE_PART*
-
+PAPER_SECTION_VII_RESULTS.md
+research_paper_final_content.md
+generate_paper_assets.py
 .gitignore
