@@ -45,5 +45,9 @@ Thumbs.db
 /RESEARCH_GUIDE_PART*
 PAPER_SECTION_VII_RESULTS.md
 research_paper_final_content.md
-generate_paper_assets.py
-.gitignore
+/home/anonymous/GraphNN/results/paper_assets/*.tex
+
+# dataset
+/dataset/METR-LA.csv
+/dataset/PEMS-BAY.csv
+
