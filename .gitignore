@@ -45,7 +45,7 @@ Thumbs.db
 /RESEARCH_GUIDE_PART*
 PAPER_SECTION_VII_RESULTS.md
 research_paper_final_content.md
-/home/anonymous/GraphNN/results/paper_assets/*.tex
+results/paper_assets/*.tex
 
 # dataset
 /dataset/METR-LA.csv
