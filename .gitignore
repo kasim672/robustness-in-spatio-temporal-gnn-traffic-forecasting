@@ -42,6 +42,6 @@ Thumbs.db
 # results/plots/*.png       → generated figures (keep, for paper)
 
 # unnecessary
-RESEARCH_GUIDE*
+/RESEARCH_GUIDE_PART*
 
 .gitignore
