@@ -159,7 +159,7 @@ This benchmark evaluates **seven models** spanning four paradigm families:
 
 ---
 
-## 🗺️ Datasets
+## Datasets
 
 <div align="center">
 
@@ -418,14 +418,6 @@ If you use this benchmark in your research:
   url     = {https://github.com/kasim672/robustness-in-spatio-temporal-gnn-traffic-forecasting}
 }
 ```
-
----
-
-## 📚 References
-
-For the complete bibliography (24 references), please refer to the accompanying research paper.
-
----
 
 ## License
 
