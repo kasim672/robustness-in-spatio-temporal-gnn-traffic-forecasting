@@ -406,3 +406,36 @@ All metrics (`.json`) and plots (`.png`) are committed to git.
 Model weights are `.gitignored` (too large) — reproduce by following the [training guide](installation.md).
 
 ---
+## Citation
+
+If you use this benchmark in your research:
+
+```bibtex
+@misc{graphnn2026,
+  title   = {Robustness in Spatio-Temporal GNN Traffic Forecasting},
+  author  = {Ghanchi, Kasim Ishaque and Mirza, Ali Mehdi and Desai, Shreya},
+  year    = {2026},
+  url     = {https://github.com/kasim672/robustness-in-spatio-temporal-gnn-traffic-forecasting}
+}
+```
+
+---
+
+## 📚 References
+
+For the complete bibliography (24 references), please refer to the accompanying research paper.
+
+---
+
+## License
+
+This project is for **academic research purposes**.
+
+---
+
+<div align="center">
+
+
+**Kasim Ishaque Ghanchi · Ali Mehdi Mirza · Shreya Desai**
+
+</div>
