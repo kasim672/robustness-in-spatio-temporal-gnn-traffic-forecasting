@@ -13,7 +13,7 @@
 
 ---
 
-[Key Findings](#-key-findings) · [Architecture](#-model-architectures) · [Datasets](#-datasets) · [Quick Start](#-quick-start) · [Results](#-results) · [Citation](#-citation)
+[Key Findings](#key-findings) · [Architecture](#model-architectures) · [Datasets](#datasets) · [Quick Start](#quick-start) · [Results](#results) · [Citation](#citation)
 
 </div>
 
