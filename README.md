@@ -12,7 +12,6 @@
 *Evaluating whether state-of-the-art accuracy on clean benchmarks translates to reliable performance when sensors fail.*
 
 ---
-
 [Key Findings](#key-findings) · [Architecture](#model-architectures) · [Datasets](#datasets) · [Quick Start](#quick-start) · [Results](#results) · [Citation](#citation)
 
 </div>
